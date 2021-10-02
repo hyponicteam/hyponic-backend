@@ -19,7 +19,6 @@ class CreateArticlesTable extends Migration
             $table->string('title');
             $table->longText('content');
             $table->string('image_url');
-            $table->string('author');
             $table->foreignId('article_category_id');
             $table->foreignId('user_id');
 
