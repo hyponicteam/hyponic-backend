@@ -29,6 +29,7 @@ Route::get('/videos/categories', [VideoCategoryController::class, 'all']);
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/auth/user', [AuthController::class, 'user']);
     
     Route::post('/articles', [ArticleController::class, 'store']);
     Route::patch('/articles', [ArticleController::class, 'update']);

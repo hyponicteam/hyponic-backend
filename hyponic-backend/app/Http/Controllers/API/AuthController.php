@@ -67,7 +67,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('access_token')->plainTextToken;
 
-        return ResponseFormatter::success([
+        return ResponseFormatter::success([                              
             'user' => $user,
             'access_token' => $token
         ], 'Login successful');
@@ -78,7 +78,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
+    public function logout()
     {
         $logout = Auth::user()->tokens()->delete();
 
@@ -87,6 +87,13 @@ class AuthController extends Controller
         }
 
         return ResponseFormatter::success(null, 'Logout successful');
+    }
+
+    public function user() {
+        return ResponseFormatter::success(
+            Auth::user(),
+            'Success get auth user data'
+        );
     }
 }
 
