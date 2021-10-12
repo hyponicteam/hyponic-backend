@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\ArticleCategoryController;
 use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PlantController;
 use App\Http\Controllers\API\VideoCategoryController;
 use App\Http\Controllers\API\VideoController;
 use Illuminate\Support\Facades\Route;
@@ -46,5 +47,11 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/videos/categories', [VideoCategoryController::class, 'store']);
     Route::patch('/videos/categories', [VideoCategoryController::class, 'update']);
     Route::delete('/videos/categories', [VideoCategoryController::class, 'destroy']);
+
+    Route::get('/plants', [PlantController::class, 'index']);
+    Route::get('/plants/{plant}', [PlantController::class, 'show']);
+    Route::post('/plants', [PlantController::class, 'store']);
+    Route::patch('/plants/{plant}', [PlantController::class, 'update']);
+    Route::delete('/plants/{plant}', [PlantController::class, 'destroy']);
 });
 
