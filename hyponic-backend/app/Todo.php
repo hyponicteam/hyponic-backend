@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Plant extends Model
+class Todo extends Model
 {
     protected $fillable = [
         'name'
     ];
 
     public function days() {
-        return $this->hasMany(Day::class);
+        return $this->belongsToMany(Day::class, 'todo_day');
     }
 }

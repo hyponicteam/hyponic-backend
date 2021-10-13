@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Day;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
-use App\Plant;
 use Illuminate\Http\Request;
 
-class PlantController extends Controller
+class DayController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +16,11 @@ class PlantController extends Controller
      */
     public function index()
     {
-        $plant = Plant::all();
+        $day = Day::all();
 
         return ResponseFormatter::success(
-            $plant,
-            'Get plant list success.'
+            $day,
+            'Get day list success.'
         );
     }
 
@@ -33,10 +33,11 @@ class PlantController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
+            'plant_id' => 'required|numeric',
             'name' => 'required|string'
         ]);
 
-        if(!$fields) {
+        if (!$fields) {
             return ResponseFormatter::error(
                 null,
                 'Invalid input',
@@ -44,15 +45,15 @@ class PlantController extends Controller
             );
         }
 
-        $plant = Plant::create([
+        $day = Day::create([
+            'plant_id' => $fields['plant_id'],
             'name' => $fields['name']
         ]);
 
         return ResponseFormatter::success(
-            $plant,
-            'Success create new plant data'
+            $day,
+            'Success create new day data'
         );
-
     }
 
     /**
@@ -61,11 +62,11 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Plant $plant)
+    public function show(Day $day)
     {
         return ResponseFormatter::success(
-            $plant->with(['days']),
-            'Success get plant data'
+            $day,
+            'Success get day data'
         );
     }
 
@@ -76,27 +77,39 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Plant $plant)
+    public function update(Request $request, Day $day)
     {
-        $fields = $request->validate([
-            'name' => 'required|string'
-        ]);
-
-        if(!$fields) {
-            return ResponseFormatter::error(
+        if (!$request->input('plant_id') || !$request->input('name')) {
+            ResponseFormatter::success(
                 null,
                 'Invalid input',
                 400
             );
         }
 
-        $plant->update([
-            'name' => $fields['name']
-        ]);
+        if ($request->input('plant_id')) {
+            $fields = $request->validate([
+                'plant_id' => 'numeric'
+            ]);
+
+            $day->update([
+                'plant_id' => $fields['plant_id']
+            ]);
+        }
+
+        if ($request->input('name')) {
+            $fields = $request->validate([
+                'name' => 'string'
+            ]);
+
+            $day->update([
+                'name' => $fields['name']
+            ]);
+        }
 
         return ResponseFormatter::success(
-            $plant,
-            'Plant updated'
+            $day,
+            'Day updated'
         );
     }
 
@@ -106,13 +119,13 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Plant $plant)
+    public function destroy(Day $day)
     {
-        $plant->delete();
+        $day->delete();
 
         return ResponseFormatter::success(
             null,
-            'Plant deleted'
+            'Day deleted'
         );
     }
 }

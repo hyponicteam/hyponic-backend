@@ -3,7 +3,9 @@
 use App\Http\Controllers\API\ArticleCategoryController;
 use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\DayController;
 use App\Http\Controllers\API\PlantController;
+use App\Http\Controllers\API\TodoController;
 use App\Http\Controllers\API\VideoCategoryController;
 use App\Http\Controllers\API\VideoController;
 use Illuminate\Support\Facades\Route;
@@ -53,5 +55,17 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/plants', [PlantController::class, 'store']);
     Route::patch('/plants/{plant}', [PlantController::class, 'update']);
     Route::delete('/plants/{plant}', [PlantController::class, 'destroy']);
+
+    Route::get('/days', [DayController::class, 'index']);
+    Route::get('/days/{day}', [DayController::class, 'show']);
+    Route::post('/days', [DayController::class, 'store']);
+    Route::patch('/days/{day}', [DayController::class, 'update']);
+    Route::delete('/days/{day}', [DayController::class, 'destroy']);
+
+    Route::get('/todos', [TodoController::class, 'index']);
+    Route::get('/todos/{todo}', [TodoController::class, 'show']);
+    Route::post('/todos', [TodoController::class, 'store']);
+    Route::patch('/todos/{todo}', [TodoController::class, 'update']);
+    Route::delete('/todos/{todo}', [TodoController::class, 'destroy']);
 });
 

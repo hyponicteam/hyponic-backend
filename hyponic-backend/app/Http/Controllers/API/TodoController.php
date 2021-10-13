@@ -4,10 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
-use App\Plant;
+use App\Todo;
 use Illuminate\Http\Request;
 
-class PlantController extends Controller
+class TodoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +16,11 @@ class PlantController extends Controller
      */
     public function index()
     {
-        $plant = Plant::all();
+        $todo = Todo::all();
 
         return ResponseFormatter::success(
-            $plant,
-            'Get plant list success.'
+            $todo,
+            'Get todo list success.'
         );
     }
 
@@ -33,10 +33,11 @@ class PlantController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
+            'day_id' => 'required|numeric',
             'name' => 'required|string'
         ]);
 
-        if(!$fields) {
+        if (!$fields) {
             return ResponseFormatter::error(
                 null,
                 'Invalid input',
@@ -44,15 +45,16 @@ class PlantController extends Controller
             );
         }
 
-        $plant = Plant::create([
+        $todo = Todo::create([
             'name' => $fields['name']
         ]);
 
-        return ResponseFormatter::success(
-            $plant,
-            'Success create new plant data'
-        );
+        $todo->days()->attach($fields['day_id']);
 
+        return ResponseFormatter::success(
+            $todo,
+            'Success create new todo data'
+        );
     }
 
     /**
@@ -61,11 +63,11 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Plant $plant)
+    public function show(Todo $todo)
     {
         return ResponseFormatter::success(
-            $plant->with(['days']),
-            'Success get plant data'
+            $todo,
+            'Success get todo data'
         );
     }
 
@@ -76,7 +78,7 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Plant $plant)
+    public function update(Request $request, Todo $todo)
     {
         $fields = $request->validate([
             'name' => 'required|string'
@@ -90,13 +92,13 @@ class PlantController extends Controller
             );
         }
 
-        $plant->update([
+        $todo->update([
             'name' => $fields['name']
         ]);
 
         return ResponseFormatter::success(
-            $plant,
-            'Plant updated'
+            $todo,
+            'Todo updated'
         );
     }
 
@@ -106,13 +108,13 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Plant $plant)
+    public function destroy(Todo $todo)
     {
-        $plant->delete();
+        $todo->delete();
 
         return ResponseFormatter::success(
             null,
-            'Plant deleted'
+            'Todo deleted'
         );
     }
 }
