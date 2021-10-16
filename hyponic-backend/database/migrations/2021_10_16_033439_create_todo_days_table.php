@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTodoDayTable extends Migration
+class CreateTodoDaysTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateTodoDayTable extends Migration
      */
     public function up()
     {
-        Schema::create('todo_day', function (Blueprint $table) {
+        Schema::create('todo_days', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('todo_id')->constrained();
             $table->foreignId('day_id')->constrained();
-            
-            $table->timestamps();
+            $table->foreignId('todo_id')->constrained();
         });
     }
 
@@ -29,6 +27,6 @@ class CreateTodoDayTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('todo_day');
+        Schema::dropIfExists('todo_days');
     }
 }

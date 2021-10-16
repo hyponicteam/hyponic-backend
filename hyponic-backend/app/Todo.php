@@ -11,6 +11,6 @@ class Todo extends Model
     ];
 
     public function days() {
-        return $this->belongsToMany(Day::class, 'todo_day');
+        return $this->belongsToMany(Day::class, 'todo_days', 'todo_id', 'day_id')->withPivot('id');
     }
 }

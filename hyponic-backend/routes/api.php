@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\ArticleCategoryController;
 use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\DailyActivityController;
 use App\Http\Controllers\API\DayController;
 use App\Http\Controllers\API\PlantController;
 use App\Http\Controllers\API\TodoController;
@@ -67,5 +68,12 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/todos', [TodoController::class, 'store']);
     Route::patch('/todos/{todo}', [TodoController::class, 'update']);
     Route::delete('/todos/{todo}', [TodoController::class, 'destroy']);
+
+    Route::get('/daily-activities', [DailyActivityController::class, 'index']);
+    Route::get('/daily-activities/{daily_activity}', [DailyActivityController::class, 'show']);
+    Route::post('/daily-activities', [DailyActivityController::class, 'store']);
+    Route::patch('/daily-activities/{id}', [DailyActivityController::class, 'update']);
+    Route::patch('/daily-activities/check/{id}', [DailyActivityController::class, 'check']);
+    Route::delete('/daily-activities/{id}', [DailyActivityController::class, 'destroy']);
 });
 
