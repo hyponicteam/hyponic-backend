@@ -14,27 +14,8 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function all(Request $request)
+    public function index(Request $request)
     {
-        $id = $request->input('id');
-
-        if ($id) {
-            $article = Article::with(['articleCategory', 'user'])->find($id);
-
-            if ($article) {
-                return ResponseFormatter::success(
-                    $article,
-                    'Get article with ID: ' . $id . ' success.'
-                );
-            } else {
-                return ResponseFormatter::error(
-                    null,
-                    'Article with ID: ' . $id . ' not found.',
-                    404
-                );
-            }
-        }
-
         $title = $request->input('title');
         $content = $request->input('content');
         $article_category_id = $request->input('article_category_id');
@@ -90,7 +71,7 @@ class ArticleController extends Controller
             );
         }
 
-        Article::create([
+        $article = Article::create([
             'title' => $fields['title'],
             'content' => $fields['content'],
             'image_url' => $fields['image_url'],
@@ -99,8 +80,24 @@ class ArticleController extends Controller
         ]);
 
         return ResponseFormatter::success(
-            null,
+            $article,
             'New article created.'
+        );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Article $article)
+    {
+        $article->load('articleCategory', 'user');
+
+        return ResponseFormatter::success(
+            $article,
+            'Get article success.'
         );
     }
 
@@ -111,28 +108,8 @@ class ArticleController extends Controller
      * @param  \App\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, Article $article)
     {
-        $id = $request->input('id');
-
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'Error no ID given.',
-                400
-            );
-        }
-
-        $article = Article::find($id);
-
-        if (!$article) {
-            return ResponseFormatter::error(
-                null,
-                'Article with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
         $title = $request->input('title');
         $content = $request->input('content');
         $image_url = $request->input('image_url');
@@ -175,8 +152,8 @@ class ArticleController extends Controller
         }
 
         return ResponseFormatter::success(
-            null,
-            'Article with ID: ' . $id . ' updated.'
+            $article,
+            'Article updated.'
         );
     }
 
@@ -186,33 +163,13 @@ class ArticleController extends Controller
      * @param  \App\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Article $article)
     {
-        $id = $request->input('id');
-        
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'ID not given.',
-                400
-            );
-        }
-
-        $article = Article::find($id);
-        
-        if(!$article) {
-            return ResponseFormatter::error(
-                null,
-                'Article with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
         $article->delete();
 
         return ResponseFormatter::success(
             null,
-            'Article with ID: ' . $id . ' deleted.'
+            'Article deleted.'
         );
     }
 }

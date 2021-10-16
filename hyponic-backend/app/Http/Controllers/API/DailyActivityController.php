@@ -109,8 +109,6 @@ class DailyActivityController extends Controller
             $daily_activity,
             'Success get daily activity'
         );
-        // if ($id) {
-        // }
     }
 
     /**
