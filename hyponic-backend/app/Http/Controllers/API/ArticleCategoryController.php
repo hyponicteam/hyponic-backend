@@ -14,37 +14,18 @@ class ArticleCategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function all(Request $request)
+    public function index(Request $request)
     {
-        $id = $request->input('id');
-
-        if($id) {
-            $article_category = ArticleCategory::with(['articles'])->find($id);
-            
-            if($article_category) {
-                return ResponseFormatter::success(
-                    $article_category,
-                    'Get article category with ID: ' . $id . ' success.'
-                );
-            } else {
-                return ResponseFormatter::error(
-                    null,
-                    'Article category with ID : ' . $id . ' not found.',
-                    404
-                );
-            }
-        }
-
         $name = $request->input('name');
         $show_article = $request->input('show_article');
-        
+
         $article_category = ArticleCategory::query();
 
-        if($name) {
+        if ($name) {
             $article_category->where('name', 'like', '%' . $name . '%');
         }
 
-        if($show_article) {
+        if ($show_article) {
             $article_category->with(['articles']);
         }
 
@@ -63,7 +44,7 @@ class ArticleCategoryController extends Controller
     public function store(Request $request)
     {
         $auth_user = auth()->user();
-        if($auth_user->role != "ADMIN") {
+        if ($auth_user->role != "ADMIN") {
             return ResponseFormatter::error(
                 null,
                 'You\'re not an admin.',
@@ -76,7 +57,7 @@ class ArticleCategoryController extends Controller
             'name' => 'string|required',
         ]);
 
-        if(!$fields) {
+        if (!$fields) {
             return ResponseFormatter::error(
                 null,
                 'Invalid input.',
@@ -84,14 +65,30 @@ class ArticleCategoryController extends Controller
             );
         }
 
-        ArticleCategory::create([
+        $article_category = ArticleCategory::create([
             'image_url' => $fields['image_url'],
             'name' => $fields['name']
         ]);
 
         return ResponseFormatter::success(
-            null,
+            $article_category,
             'New article category created.'
+        );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(ArticleCategory $article_category)
+    {
+        $article_category->load('articles');
+
+        return ResponseFormatter::success(
+            $article_category,
+            'Get article category success.'
         );
     }
 
@@ -102,10 +99,10 @@ class ArticleCategoryController extends Controller
      * @param  \App\ArticleCategory  $article_category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, ArticleCategory $article_category)
     {
         $auth_user = auth()->user();
-        if($auth_user->role != "ADMIN") {
+        if ($auth_user->role != "ADMIN") {
             return ResponseFormatter::error(
                 null,
                 'You\'re not an admin.',
@@ -113,29 +110,9 @@ class ArticleCategoryController extends Controller
             );
         }
 
-        $id = $request->input('id');
-
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'No ID given.',
-                400
-            );
-        }
-
-        $article_category = ArticleCategory::find($id);
-
-        if (!$article_category) {
-            return ResponseFormatter::error(
-                null,
-                'Article with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
         $image_url = $request->input('image_url');
         $name = $request->input('name');
-        
+
         if ($image_url) {
             $fields = $request->validate(['image_url' => 'string']);
             $article_category->update([
@@ -151,8 +128,8 @@ class ArticleCategoryController extends Controller
         }
 
         return ResponseFormatter::success(
-            null,
-            'Article category with ID: ' . $id . ' updated.'
+            $article_category,
+            'Article category updated.'
         );
     }
 
@@ -162,43 +139,22 @@ class ArticleCategoryController extends Controller
      * @param  \App\ArticleCategory  $article_category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(ArticleCategory $article_category)
     {
         $auth_user = auth()->user();
-        if($auth_user->role != "ADMIN") {
+        if ($auth_user->role != "ADMIN") {
             return ResponseFormatter::error(
                 null,
                 'You\'re not an admin.',
                 400
             );
         }
-
-        $id = $request->input('id');
         
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'No ID given.',
-                400
-            );
-        }
-
-        $article_category = ArticleCategory::find($id);
-        
-        if(!$article_category) {
-            return ResponseFormatter::error(
-                null,
-                'Article category with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
         $article_category->delete();
 
         return ResponseFormatter::success(
             null,
-            'Article category with ID: ' . $id . ' deleted.'
+            'Article category deleted.'
         );
     }
 }
-

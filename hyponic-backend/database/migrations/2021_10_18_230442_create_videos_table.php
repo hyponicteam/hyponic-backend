@@ -18,8 +18,8 @@ class CreateVideosTable extends Migration
 
             $table->string('title');
             $table->string('video_url');
-            $table->foreignId('video_category_id');
-            $table->foreignId('user_id');
+            $table->foreignId('video_category_id')->constrained();
+            $table->foreignId('user_id')->constrained();
 
             $table->timestamps();
             $table->softDeletes();

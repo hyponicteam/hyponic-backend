@@ -9,37 +9,18 @@ use Illuminate\Http\Request;
 
 class VideoCategoryController extends Controller
 {
-    public function all(Request $request)
+    public function index(Request $request)
     {
-        $id = $request->input('id');
-
-        if($id) {
-            $video_category = VideoCategory::with(['videos'])->find($id);
-            
-            if($video_category) {
-                return ResponseFormatter::success(
-                    $video_category,
-                    'Get video category with ID: ' . $id . ' success.'
-                );
-            } else {
-                return ResponseFormatter::error(
-                    null,
-                    'Video category with ID: ' . $id . ' not found.',
-                    404
-                );
-            }
-        }
-
         $name = $request->input('name');
         $show_video = $request->input('show_video');
-        
+
         $video_category = VideoCategory::query();
 
-        if($name) {
+        if ($name) {
             $video_category->where('name', 'like', '%' . $name . '%');
         }
 
-        if($show_video) {
+        if ($show_video) {
             $video_category->with(['videos']);
         }
 
@@ -62,7 +43,7 @@ class VideoCategoryController extends Controller
             'name' => 'string|required',
         ]);
 
-        if(!$fields) {
+        if (!$fields) {
             return ResponseFormatter::error(
                 null,
                 'Invalid input.',
@@ -70,14 +51,30 @@ class VideoCategoryController extends Controller
             );
         }
 
-        VideoCategory::create([
+        $video_category = VideoCategory::create([
             'image_url' => $fields['image_url'],
             'name' => $fields['name']
         ]);
 
         return ResponseFormatter::success(
-            null,
+            $video_category,
             'New video category created.'
+        );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(VideoCategory $video_category)
+    {
+        $video_category->load('videos');
+
+        return ResponseFormatter::success(
+            $video_category,
+            'Get video category success.'
         );
     }
 
@@ -88,31 +85,11 @@ class VideoCategoryController extends Controller
      * @param  \App\VideoCategory  $video_category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, VideoCategory $video_category)
     {
-        $id = $request->input('id');
-
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'No ID given.',
-                400
-            );
-        }
-
-        $video_category = VideoCategory::find($id);
-
-        if (!$video_category) {
-            return ResponseFormatter::error(
-                null,
-                'Video category with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
         $image_url = $request->input('image_url');
         $name = $request->input('name');
-        
+
         if ($image_url) {
             $fields = $request->validate(['image_url' => 'string']);
             $video_category->update([
@@ -128,8 +105,8 @@ class VideoCategoryController extends Controller
         }
 
         return ResponseFormatter::success(
-            null,
-            'Video category with ID: ' . $id . ' updated.'
+            $video_category,
+            'Video category updated.'
         );
     }
 
@@ -139,33 +116,13 @@ class VideoCategoryController extends Controller
      * @param  \App\VideoCategory  $video_category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(VideoCategory $video_category)
     {
-        $id = $request->input('id');
-        
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'No ID given.',
-                400
-            );
-        }
-
-        $video_category = VideoCategory::find($id);
-        
-        if(!$video_category) {
-            return ResponseFormatter::error(
-                null,
-                'Video category with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
         $video_category->delete();
 
         return ResponseFormatter::success(
             null,
-            'Video category with ID: ' . $id . ' deleted.'
+            'Video category deleted.'
         );
     }
 }

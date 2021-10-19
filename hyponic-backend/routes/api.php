@@ -27,13 +27,15 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{article}', [ArticleController::class, 'show']);
-Route::get('/articles/categories', [ArticleCategoryController::class, 'index']);
-Route::get('/articles/categories/{article_category}', [ArticleCategoryController::class, 'show']);
+
+Route::get('/article-categories', [ArticleCategoryController::class, 'index']);
+Route::get('/article-categories/{article_category}', [ArticleCategoryController::class, 'show']);
 
 Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/videos/{video}', [VideoController::class, 'show']);
-Route::get('/videos/categories', [VideoCategoryController::class, 'index']);
-Route::get('/videos/categories/{video_category}', [VideoCategoryController::class, 'show']);
+
+Route::get('/video-categories', [VideoCategoryController::class, 'index']);
+Route::get('/video-categories/{video_category}', [VideoCategoryController::class, 'show']);
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -43,17 +45,17 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::patch('/articles/{article}', [ArticleController::class, 'update']);
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy']);
     
-    Route::post('/articles/categories', [ArticleCategoryController::class, 'store']);
-    Route::patch('/articles/categories/{article_category}', [ArticleCategoryController::class, 'update']);
-    Route::delete('/articles/categories/{article_category}', [ArticleCategoryController::class, 'destroy']);
+    Route::post('/article-categories', [ArticleCategoryController::class, 'store']);
+    Route::patch('/article-categories/{article_category}', [ArticleCategoryController::class, 'update']);
+    Route::delete('/article-categories/{article_category}', [ArticleCategoryController::class, 'destroy']);
     
     Route::post('/videos', [VideoController::class, 'store']);
     Route::patch('/videos/{video}', [VideoController::class, 'update']);
     Route::delete('/videos/{video}', [VideoController::class, 'destroy']);
 
-    Route::post('/videos/categories', [VideoCategoryController::class, 'store']);
-    Route::patch('/videos/categories/{video_category}', [VideoCategoryController::class, 'update']);
-    Route::delete('/videos/categories/{video_category}', [VideoCategoryController::class, 'destroy']);
+    Route::post('/video-categories', [VideoCategoryController::class, 'store']);
+    Route::patch('/video-categories/{video_category}', [VideoCategoryController::class, 'update']);
+    Route::delete('/video-categories/{video_category}', [VideoCategoryController::class, 'destroy']);
 
     Route::get('/plants', [PlantController::class, 'index']);
     Route::get('/plants/{plant}', [PlantController::class, 'show']);
@@ -80,4 +82,3 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::patch('/daily-activities/check/{id}', [DailyActivityController::class, 'check']);
     Route::delete('/daily-activities/{id}', [DailyActivityController::class, 'destroy']);
 });
-

@@ -14,27 +14,8 @@ class VideoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function all(Request $request)
+    public function index(Request $request)
     {
-        $id = $request->input('id');
-
-        if ($id) {
-            $video = Video::with(['videoCategory', 'user'])->find($id);
-
-            if ($video) {
-                return ResponseFormatter::success(
-                    $video,
-                    'Get video with ID: ' . $id . ' success.'
-                );
-            } else {
-                return ResponseFormatter::error(
-                    null,
-                    'Video with ID: ' . $id . ' not found.',
-                    404
-                );
-            }
-        }
-
         $title = $request->input('title');
         $video_category_id = $request->input('video_category_id');
 
@@ -51,7 +32,7 @@ class VideoController extends Controller
         $limit = $request->input('limit');
 
         return ResponseFormatter::success(
-            $videos->paginate($limit),
+            $videos->get(),
             'Get video list success.'
         );
     }
@@ -79,7 +60,7 @@ class VideoController extends Controller
             );
         }
 
-        Video::create([
+        $video = Video::create([
             'title' => $fields['title'],
             'video_url' => $fields['video_url'],
             'video_category_id' => $fields['video_category_id'],
@@ -87,8 +68,24 @@ class VideoController extends Controller
         ]);
 
         return ResponseFormatter::success(
-            null,
+            $video,
             'New video created.'
+        );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Video $video)
+    {
+        $video->load('videoCategory', 'user');
+
+        return ResponseFormatter::success(
+            $video,
+            'Get video success.'
         );
     }
 
@@ -99,28 +96,8 @@ class VideoController extends Controller
      * @param  \App\Video  $video
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, Video $video)
     {
-        $id = $request->input('id');
-
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'No ID given.',
-                400
-            );
-        }
-
-        $video = Video::find($id);
-
-        if (!$video) {
-            return ResponseFormatter::error(
-                null,
-                'Video with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
         $title = $request->input('title');
         $video_url = $request->input('video_url');
         $video_category_id = $request->input('video_category_id');
@@ -155,8 +132,8 @@ class VideoController extends Controller
         }
 
         return ResponseFormatter::success(
-            null,
-            'Video with ID: ' . $id . ' updated.'
+            $video,
+            'Video updated.'
         );
     }
 
@@ -166,33 +143,13 @@ class VideoController extends Controller
      * @param  \App\Video  $video
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Video $video)
     {
-        $id = $request->input('id');
-        
-        if(!$id) {
-            return ResponseFormatter::error(
-                null,
-                'No ID given.',
-                400
-            );
-        }
-
-        $article = Video::find($id);
-        
-        if(!$article) {
-            return ResponseFormatter::error(
-                null,
-                'Video with ID: ' . $id . ' not found.',
-                404
-            );
-        }
-
-        $article->delete();
+        $video->delete();
 
         return ResponseFormatter::success(
             null,
-            'Video with ID: ' . $id . ' deleted.'
+            'Video deleted.'
         );
     }
 }

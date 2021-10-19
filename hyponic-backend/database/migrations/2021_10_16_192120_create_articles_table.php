@@ -15,12 +15,12 @@ class CreateArticlesTable extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('article_category_id')->constrained();
+            $table->foreignId('user_id')->constrained();
 
             $table->string('title');
             $table->longText('content');
             $table->string('image_url');
-            $table->foreignId('article_category_id');
-            $table->foreignId('user_id');
 
             $table->timestamps();
             $table->softDeletes();
@@ -37,3 +37,4 @@ class CreateArticlesTable extends Migration
         Schema::dropIfExists('articles');
     }
 }
+
