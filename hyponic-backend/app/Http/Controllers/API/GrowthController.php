@@ -150,22 +150,18 @@ class GrowthController extends Controller
                 $growths_data = Growth::where('plant_id', $fields['plant_id'])->orderBy('updated_at', 'desc')->get();
                 $growth_per_days = [];
 
-                if($fields['category'] == 'plant_height') {
-                    $growth_per_days = $this->getGrowthPerDays($growths_data, 'plant_height');
-                } else {
-                    $growth_per_days = $this->getGrowthPerDays($growths_data, 'leaf_width');
-                }
+                $growth_per_days = $this->getGrowthPerDays($growths_data, $fields['category']);
 
-                usort($growth_per_days, function($a, $b) {
+                usort($growth_per_days, function ($a, $b) {
                     return $b['growth_per_day'] - $a['growth_per_day'];
                 });
 
                 $result = [];
 
-                if(count($growth_per_days) <= $fields['n']) {
+                if (count($growth_per_days) <= $fields['n']) {
                     $result = $growth_per_days;
                 } else {
-                    for($i = 0; $i < $fields['n']; $i++) {
+                    for ($i = 0; $i < $fields['n']; $i++) {
                         array_push($result, $growth_per_days[$i]);
                     }
                 }
@@ -186,7 +182,8 @@ class GrowthController extends Controller
         }
     }
 
-    private function getGrowthPerDays($growths_data, $column_name) {
+    private function getGrowthPerDays($growths_data, $column_name)
+    {
         $growth_per_days = [];
 
         for ($i = 0; $i < count($growths_data) - 1; $i++) {
