@@ -5,11 +5,12 @@ namespace App\Http\Controllers\API;
 use App\Growth;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
+use App\Http\Traits\GetGrowthData;
 use Illuminate\Http\Request;
 
 class GrowthController extends Controller
 {
+    use GetGrowthData;
     /**
      * Store a newly created resource in storage.
      *
@@ -148,29 +149,44 @@ class GrowthController extends Controller
 
             if ($fields['category'] == 'plant_height' || $fields['category'] == 'leaf_width') {
                 $growths_data = Growth::where('plant_id', $fields['plant_id'])->orderBy('updated_at', 'desc')->get();
-                $growth_per_days = [];
 
-                $growth_per_days = $this->getGrowthPerDays($growths_data, $fields['category']);
-
-                usort($growth_per_days, function ($a, $b) {
-                    return $b['growth_per_day'] - $a['growth_per_day'];
-                });
-
-                $result = [];
-
-                if (count($growth_per_days) <= $fields['n']) {
-                    $result = $growth_per_days;
-                } else {
-                    for ($i = 0; $i < $fields['n']; $i++) {
-                        array_push($result, $growth_per_days[$i]);
+                if(count($growths_data) > 1) {
+                    $growth_per_days = [];
+    
+                    $growth_per_days = $this->getGrowthPerDays($growths_data, $fields['category']);
+    
+                    usort($growth_per_days, function ($a, $b) {
+                        return $b['growth_per_day'] - $a['growth_per_day'];
+                    });
+    
+                    $result = [];
+    
+                    if (count($growth_per_days) <= $fields['n']) {
+                        $result = $growth_per_days;
+                    } else {
+                        for ($i = 0; $i < $fields['n']; $i++) {
+                            array_push($result, $growth_per_days[$i]);
+                        }
                     }
+    
+                    return ResponseFormatter::success(
+                        $result,
+                        'Success get growth insight'
+                    );
+                } else {
+                    return ResponseFormatter::error(
+                        [
+                            'message' => 'Update terus laporan perkembangan untuk mendapatkan insight-nya!'
+                        ],
+                        'Growth data count less than 2',
+                        400
+                    );
                 }
-
-                return $result;
             } else {
                 return ResponseFormatter::error(
                     null,
-                    'Invalid category input'
+                    'Invalid category input',
+                    400
                 );
             }
         } else {
@@ -180,24 +196,5 @@ class GrowthController extends Controller
                 400
             );
         }
-    }
-
-    private function getGrowthPerDays($growths_data, $column_name)
-    {
-        $growth_per_days = [];
-
-        for ($i = 0; $i < count($growths_data) - 1; $i++) {
-            $growth = abs(round($growths_data[$i]->{$column_name} - $growths_data[$i + 1]->{$column_name}, 2));
-            $duration = round($growths_data[$i]->updated_at->diffInSeconds($growths_data[$i + 1]->updated_at, true) / 86400, 2);
-            $plant_height_growth = round($growth / $duration, 2);
-
-            array_push($growth_per_days, [
-                'from' => Carbon::parse($growths_data[$i + 1]->updated_at)->toDateTimeString(),
-                'to' => Carbon::parse($growths_data[$i]->updated_at)->toDateTimeString(),
-                'growth_per_day' => $plant_height_growth,
-            ]);
-        }
-
-        return $growth_per_days;
     }
 }

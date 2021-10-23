@@ -18,4 +18,12 @@ class Growth extends Model
         'acidity',
         'plant_id'
     ];
+
+    protected $touches = [
+        'plant'
+    ];
+
+    public function plant() {
+        return $this->belongsTo(Plant::class);
+    }
 }

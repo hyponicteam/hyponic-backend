@@ -50,6 +50,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::delete('/plants/{plant}', [PlantController::class, 'destroy']);
     
     Route::get('/latest-plants', [PlantController::class, 'latest']);
+    Route::get('/top-plants', [PlantController::class, 'top']);
 
     Route::get('/growths/{growth}', [GrowthController::class, 'show']);
     Route::post('/growths/', [GrowthController::class, 'store']);
