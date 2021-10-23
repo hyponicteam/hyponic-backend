@@ -3,14 +3,18 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Traits\UsesUUID;
 
 class Plant extends Model
 {
+    use UsesUUID;
+
     protected $fillable = [
-        'name'
+        'name',
+        'user_id'
     ];
 
-    public function days() {
-        return $this->hasMany(Day::class);
+    public function growths() {
+        return $this->hasMany(Growth::class);
     }
 }

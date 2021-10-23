@@ -4,11 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
-use App\Plant;
+use App\Planta;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class PlantController extends Controller
+class PlantaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,10 +16,11 @@ class PlantController extends Controller
      */
     public function index()
     {
-        $plants = Plant::where('user_id', Auth::user()->id)->get();
+        $plant = Planta::all();
+
         return ResponseFormatter::success(
-            $plants,
-            'Success get all plants'
+            $plant,
+            'Get plant list success.'
         );
     }
 
@@ -33,7 +33,7 @@ class PlantController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string'
         ]);
 
         if(!$fields) {
@@ -44,15 +44,15 @@ class PlantController extends Controller
             );
         }
 
-        $plant = Plant::create([
-            'name' => $fields['name'],
-            'user_id' => Auth::user()->id
+        $plant = Planta::create([
+            'name' => $fields['name']
         ]);
 
         return ResponseFormatter::success(
             $plant,
-            'New plant data created'
+            'Success create new plant data'
         );
+
     }
 
     /**
@@ -61,12 +61,10 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Plant $plant)
+    public function show(Planta $plant)
     {
-        $plant->load('growths');
-        
         return ResponseFormatter::success(
-            $plant,
+            $plant->with(['days']),
             'Success get plant data'
         );
     }
@@ -78,10 +76,10 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Plant $plant)
+    public function update(Request $request, Planta $plant)
     {
         $fields = $request->validate([
-            'name' => 'string',
+            'name' => 'required|string'
         ]);
 
         if(!$fields) {
@@ -98,7 +96,7 @@ class PlantController extends Controller
 
         return ResponseFormatter::success(
             $plant,
-            'Plant data updated'
+            'Plant updated'
         );
     }
 
@@ -108,13 +106,13 @@ class PlantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Plant $plant)
+    public function destroy(Planta $plant)
     {
         $plant->delete();
 
         return ResponseFormatter::success(
             null,
-            'Plant data deleted'
+            'Plant deleted'
         );
     }
 }
