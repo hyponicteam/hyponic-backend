@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Http\Traits\UsesUUID;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Growth extends Model

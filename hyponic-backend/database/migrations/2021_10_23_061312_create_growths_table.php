@@ -17,10 +17,10 @@ class CreateGrowthsTable extends Migration
             $table->uuid('id')->unique()->primary();
             $table->foreignUuid('plant_id')->constrained();
 
-            $table->float('plant_height')->nullable();
-            $table->float('leaf_width')->nullable();
-            $table->float('temperature')->nullable();
-            $table->float('acidity')->nullable();
+            $table->float('plant_height', 4, 2)->nullable();
+            $table->float('leaf_width', 4, 2)->nullable();
+            $table->float('temperature', 4, 2)->nullable();
+            $table->float('acidity', 4, 2)->nullable();
 
             $table->timestamps();
         });

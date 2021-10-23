@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Plant;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +19,10 @@ class PlantController extends Controller
      */
     public function index()
     {
-        $plants = Plant::where('user_id', Auth::user()->id)->get();
+        $plants = Plant::orderBy('updated_at', 'desc')
+            ->where('user_id', Auth::user()->id)
+            ->get();
+
         return ResponseFormatter::success(
             $plants,
             'Success get all plants'
@@ -36,7 +41,7 @@ class PlantController extends Controller
             'name' => 'required|string',
         ]);
 
-        if(!$fields) {
+        if (!$fields) {
             return ResponseFormatter::error(
                 null,
                 'Invalid input',
@@ -84,7 +89,7 @@ class PlantController extends Controller
             'name' => 'string',
         ]);
 
-        if(!$fields) {
+        if (!$fields) {
             return ResponseFormatter::error(
                 null,
                 'Invalid input',
@@ -116,5 +121,35 @@ class PlantController extends Controller
             null,
             'Plant data deleted'
         );
+    }
+
+    public function latest(Request $request)
+    {
+        if ($request->input('n')) {
+            $fields = $request->validate([
+                'n' => 'numeric'
+            ]);
+
+            if (!$fields) {
+                return ResponseFormatter::error(
+                    null,
+                    'Invalid input',
+                    400
+                );
+            }
+
+            $plants = Plant::orderBy('updated_at', 'desc')
+                ->where('user_id', Auth::user()->id)
+                ->take($fields['n'])
+                ->get()
+                ->sortByDesc('updated_at');
+
+            return ResponseFormatter::success(
+                $plants,
+                'Success get plants data'
+            );
+        } else {
+            return redirect('api/plants');
+        }
     }
 }

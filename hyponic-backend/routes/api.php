@@ -49,10 +49,14 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::patch('/plants/{plant}', [PlantController::class, 'update']);
     Route::delete('/plants/{plant}', [PlantController::class, 'destroy']);
     
+    Route::get('/latest-plants', [PlantController::class, 'latest']);
+
     Route::get('/growths/{growth}', [GrowthController::class, 'show']);
     Route::post('/growths/', [GrowthController::class, 'store']);
     Route::patch('/growths/{growth}', [GrowthController::class, 'update']);
     Route::delete('/growths/{growth}', [GrowthController::class, 'destroy']);
+    
+    Route::get('/top-growths', [GrowthController::class, 'top']);
 
     // Route::post('/articles', [ArticleController::class, 'store']);
     // Route::patch('/articles/{article}', [ArticleController::class, 'update']);
