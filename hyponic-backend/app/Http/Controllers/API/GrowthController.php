@@ -6,7 +6,9 @@ use App\Growth;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\GetGrowthData;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GrowthController extends Controller
 {
@@ -57,6 +59,14 @@ class GrowthController extends Controller
      */
     public function show(Growth $growth)
     {
+        if($growth->load('plant')->plant->user_id != Auth::user()->id) {
+            return ResponseFormatter::error(
+                null,
+                'Growth data do not belongs to currently authenticated user',
+                401
+            );
+        }
+
         return ResponseFormatter::success(
             $growth,
             'Success get growth data'
@@ -72,37 +82,48 @@ class GrowthController extends Controller
      */
     public function update(Request $request, Growth $growth)
     {
-        if ($request->input('plant_height')) {
+        if($growth->load('plant')->plant->user_id != Auth::user()->id) {
+            return ResponseFormatter::error(
+                null,
+                'Growth data do not belongs to currently authenticated user',
+                401
+            );
+        }
+
+        try {
             $fields = $request->validate([
-                'plant_height' => 'numeric|between:0,99.99'
+                'plant_height' => 'numeric|between:0,99.99',
+                'leaf_width' => 'numeric|between:0,99.99',
+                'temperature' => 'numeric|between:0,99.99',
+                'acidity' => 'numeric|between:0,99.99'
             ]);
+        } catch(Exception $e) {
+            return ResponseFormatter::error(
+                $e,
+                'Invalid input',
+                400
+            );
+        }
+
+        if ($request->input('plant_height')) {
             $growth->update([
                 'plant_height' => $fields['plant_height']
             ]);
         }
 
         if ($request->input('leaf_width')) {
-            $fields = $request->validate([
-                'leaf_width' => 'numeric|between:0,99.99'
-            ]);
             $growth->update([
                 'leaf_width' => $fields['leaf_width']
             ]);
         }
 
         if ($request->input('temperature')) {
-            $fields = $request->validate([
-                'temperature' => 'numeric|between:0,99.99'
-            ]);
             $growth->update([
                 'temperature' => $fields['temperature']
             ]);
         }
 
         if ($request->input('acidity')) {
-            $fields = $request->validate([
-                'acidity' => 'numeric|between:0,99.99'
-            ]);
             $growth->update([
                 'acidity' => $fields['acidity']
             ]);
@@ -122,6 +143,14 @@ class GrowthController extends Controller
      */
     public function destroy(Growth $growth)
     {
+        if($growth->load('plant')->plant->user_id != Auth::user()->id) {
+            return ResponseFormatter::error(
+                null,
+                'Growth data do not belongs to currently authenticated user',
+                401
+            );
+        }
+
         $growth->delete();
 
         return ResponseFormatter::success(

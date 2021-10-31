@@ -69,6 +69,14 @@ class PlantController extends Controller
      */
     public function show(Plant $plant)
     {
+        if($plant->user_id != Auth::user()->id) {
+            return ResponseFormatter::error(
+                null,
+                'Plant data do not belongs to currently authenticated user',
+                401
+            );
+        }
+
         $plant->load('growths');
 
         return ResponseFormatter::success(
@@ -86,6 +94,14 @@ class PlantController extends Controller
      */
     public function update(Request $request, Plant $plant)
     {
+        if($plant->user_id != Auth::user()->id) {
+            return ResponseFormatter::error(
+                null,
+                'Plant data do not belongs to currently authenticated user',
+                401
+            );
+        }
+
         $fields = $request->validate([
             'name' => 'string',
         ]);
@@ -116,6 +132,14 @@ class PlantController extends Controller
      */
     public function destroy(Plant $plant)
     {
+        if($plant->user_id != Auth::user()->id) {
+            return ResponseFormatter::error(
+                null,
+                'Plant data do not belongs to currently authenticated user',
+                401
+            );
+        }
+
         $plant->delete();
 
         return ResponseFormatter::success(
