@@ -1,0 +1,74 @@
+version: '3.0'
+
+services:
+
+  php:
+    build:
+      context: .
+      dockerfile: php-dockerfile
+    container_name: hyponic-php
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    environment:
+      SERVICE_NAME: php
+      SERVICE_TAGS: dev
+    working_dir: /var/www/html/
+    volumes:
+      - ./hyponic-backend/:/var/www/html
+      - ./docker-files/php/usr/local/etc/php/conf.d/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
+    networks:
+      - laravel
+  
+  nginx:
+    image: nginx:stable-alpine
+    container_name: hyponic-nginx
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    ports:
+      - "8088:80"
+    volumes:
+      - ./hyponic-backend/:/var/www/html
+      - ./docker-files/nginx/etc/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - laravel
+  
+  mysql:
+    image: mysql:5.7.22
+    container_name: hyponic-mysql
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    ports:
+      - "4306:3306"
+    environment:
+      MYSQL_DATABASE: hyponic-backend
+      MYSQL_ROOT_PASSWORD: 12345
+      SERVICE_NAME: mysql
+      SERVICE_TAGS: dev
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker-files/mysql/etc/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: hyponic-phpmyadmin
+    restart: always
+    ports:
+      - "8089:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: 12345
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local
