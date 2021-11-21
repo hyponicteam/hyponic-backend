@@ -6,6 +6,9 @@ use App\Growth;
 use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\GetGrowthData;
+use Carbon\Carbon;
+use DateInterval;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -177,7 +180,7 @@ class GrowthController extends Controller
             }
 
             if ($fields['category'] == 'plant_height' || $fields['category'] == 'leaf_width') {
-                $growths_data = Growth::where('plant_id', $fields['plant_id'])->orderBy('updated_at', 'desc')->get();
+                $growths_data = Growth::where('plant_id', $fields['plant_id'])->orderBy('created_at', 'desc')->get();
 
                 if(count($growths_data) > 1) {
                     $growth_per_days = [];
@@ -224,6 +227,25 @@ class GrowthController extends Controller
                 'No category input',
                 400
             );
+        }
+    }
+
+    public function availableToUpdate(Request $request)
+    {
+        $latest = Growth::where('plant_id', $request->plant_id)->orderBy('created_at', 'desc')->pluck('created_at')->first();
+        $diff = floor(Carbon::parse($latest)->diffInDays(Carbon::parse(date('Y-m-d H:i:s', time())), true));
+        
+        if($diff > 0) {
+            return ResponseFormatter::success([
+                'available_to_update' => true,
+            ], 'Available to create new growth data');
+        } else {
+            $next_available = Carbon::parse($latest)->addDays(1)->format('d F Y, H:i:s');
+
+            return ResponseFormatter::error([
+                'available_to_update' => false,
+                'message' => 'Tunggu hingga ' . $next_available . ' untuk dapat mengupdate data baru untuk tanaman ini'
+            ], '24h restricted for create new growth data', 400);
         }
     }
 }

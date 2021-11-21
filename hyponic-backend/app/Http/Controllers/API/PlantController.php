@@ -205,7 +205,7 @@ class PlantController extends Controller
             }
 
             if ($fields['category'] == 'plant_height' || $fields['category'] == 'leaf_width') {
-                $plants_data = Plant::orderBy('updated_at', 'desc')
+                $plants_data = Plant::orderBy('created_at', 'desc')
                     ->where('user_id', Auth::user()->id)
                     ->get();
                 
@@ -213,7 +213,7 @@ class PlantController extends Controller
                     $plants_growth = [];
                     foreach ($plants_data as $plant) {
                         $growths_data = Growth::where('plant_id', $plant->id)
-                            ->orderBy('updated_at', 'desc')
+                            ->orderBy('created_at', 'desc')
                             ->get();
     
                         if(count($growths_data) > 1) {
