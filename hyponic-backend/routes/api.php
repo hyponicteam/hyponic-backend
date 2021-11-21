@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::delete('/growths/{growth}', [GrowthController::class, 'destroy']);
     
     Route::get('/top-growths', [GrowthController::class, 'top']);
+    Route::get('/available-to-update', [GrowthController::class, 'availableToUpdate']);
 
     // Route::post('/articles', [ArticleController::class, 'store']);
     // Route::patch('/articles/{article}', [ArticleController::class, 'update']);
