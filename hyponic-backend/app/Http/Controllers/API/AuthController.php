@@ -88,12 +88,5 @@ class AuthController extends Controller
 
         return ResponseFormatter::success(null, 'Logout successful');
     }
-
-    public function user() {
-        return ResponseFormatter::success(
-            Auth::user(),
-            'Success get auth user data'
-        );
-    }
 }
 
