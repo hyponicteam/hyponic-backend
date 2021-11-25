@@ -9,6 +9,7 @@ use App\Http\Controllers\API\GrowthController;
 use App\Http\Controllers\API\PlantaController;
 use App\Http\Controllers\API\PlantController;
 use App\Http\Controllers\API\TodoController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\VideoCategoryController;
 use App\Http\Controllers\API\VideoController;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +42,9 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::get('/auth/user', [AuthController::class, 'user']);
+    
+    Route::get('/user', [UserController::class, 'show']);
+    Route::patch('/user', [UserController::class, 'update']);
 
     Route::get('/plants', [PlantController::class, 'index']);
     Route::get('/plants/{plant}', [PlantController::class, 'show']);
