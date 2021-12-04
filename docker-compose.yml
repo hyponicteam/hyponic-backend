@@ -64,6 +64,16 @@ services:
       MYSQL_ROOT_PASSWORD: 12345
     networks:
       - laravel
+  
+  composer:
+    image: composer:2.0.12
+    container_name: hyponic-composer
+    working_dir: /var/www/html
+    command: install
+    volumes: 
+      - ./hyponic-backend/:/var/www/html
+    networks:
+      - laravel
 
 networks:
   laravel:
