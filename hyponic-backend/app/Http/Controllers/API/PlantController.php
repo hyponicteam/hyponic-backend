@@ -140,6 +140,7 @@ class PlantController extends Controller
             );
         }
 
+        $plant->growths()->delete();
         $plant->delete();
 
         return ResponseFormatter::success(
@@ -208,28 +209,28 @@ class PlantController extends Controller
                 $plants_data = Plant::orderBy('created_at', 'desc')
                     ->where('user_id', Auth::user()->id)
                     ->get();
-                
+
                 if(count($plants_data) > 0) {
                     $plants_growth = [];
                     foreach ($plants_data as $plant) {
                         $growths_data = Growth::where('plant_id', $plant->id)
                             ->orderBy('created_at', 'desc')
                             ->get();
-    
+
                         if(count($growths_data) > 1) {
                             $growth_per_days = [];
-        
+
                             $growth_per_days = $this->getGrowthPerDays($growths_data, $fields['category']);
-        
+
                             usort($growth_per_days, function ($a, $b) {
                                 return $b['growth_per_day'] - $a['growth_per_day'];
                             });
-        
+
                             $plant_growth = [
                                 'name' => $plant->name,
                                 'growth' => $growth_per_days[0]
                             ];
-        
+
                             array_push($plants_growth, $plant_growth);
                         }
                     }
@@ -238,7 +239,7 @@ class PlantController extends Controller
                         usort($plants_growth, function ($a, $b) {
                             return $b['growth']['growth_per_day'] - $a['growth']['growth_per_day'];
                         });
-        
+
                         $result = [];
                         if (count($plants_growth) <= $fields['n']) {
                             $result = $plants_growth;
@@ -261,7 +262,7 @@ class PlantController extends Controller
                             404
                         );
                     }
-    
+
                 } else {
                     return ResponseFormatter::error(
                         [
